@@ -4,9 +4,10 @@ import { generateRoadmap } from "../services/roadmap.service";
 export const createRoadmap = async(req:Request, res:Response) => {
     try{
       const {formData} = req.body;
+      console.log("Request body:",req.body)
         
-      if(!formData || Object.keys(formData).length ===0) {
-        res.status(400).json({
+      if(!formData || Object.keys(formData).length === 0) {
+         return res.status(400).json({
             success:false,
             message:"Form data is required"
         })

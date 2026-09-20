@@ -1,7 +1,11 @@
-import { CareerFormData, CareerRoadmap } from "../types/roadmap.types";
+import { CareerFormData } from "../types/roadmap.types";
 import { ai } from "../config/ai";
 
+
 export const generateRoadmap = async(formData:CareerFormData) => {
+
+  console.log("service data:", formData);
+  console.log("service skills:", formData?.skills);
   
     const prompt = `
        You are a career guidance AI.
@@ -36,12 +40,16 @@ export const generateRoadmap = async(formData:CareerFormData) => {
     `;
 
     const response = await ai.models.generateContent({
-      model:"gemini-3.8-flash",
+      model:"gemini-3.6-flash",
       contents:prompt
 
     });
     console.log(response.text)
-
-    return response.text;
+    const text = response.text
+    if(!text){
+      throw new Error("No text returned from gemini response")
+    }
+    const roadmap=JSON.parse(text);
+    return roadmap;
   
 }
