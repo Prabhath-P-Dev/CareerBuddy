@@ -20,12 +20,12 @@ export default function Hero() {
                        <h1 className="text-3xl">CareerBuddy</h1>
                     </a>
                     <div>
-                    <button className="w-auto h-auto text-lg text-black font-bold bg-gradient-to-b from-gray-100 to-blue-300 px-3 py-2 rounded-4xl mr-4 transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors">
+                    <Link to='/login'state={{mode:"register"}} className="w-auto h-auto text-lg text-black font-bold bg-gradient-to-b from-gray-100 to-blue-300 px-3 py-2 rounded-4xl mr-4 transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors">
                         Signup
-                    </button>
-                    <button className="w-auto h-auto text-lg font-bold text-black bg-gradient-to-b from-gray-100 to-blue-300 px-3 py-2 rounded-4xl transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors">
+                    </Link>
+                    <Link to='/login' state={{mode:"login"}} className="w-auto h-auto text-lg font-bold text-black bg-gradient-to-b from-gray-100 to-blue-300 px-3 py-2 rounded-4xl transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors">
                         Login
-                    </button>
+                    </Link>
                     </div>
                 </nav>
                 <h1 className="font-berkshire text-[45px]/[52px] md:text-6xl/[65px] mt-6 max-w-4xl">

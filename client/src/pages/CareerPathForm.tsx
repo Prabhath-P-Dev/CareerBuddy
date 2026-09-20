@@ -1,6 +1,7 @@
 import React, { useState, KeyboardEvent } from "react";
 import { X, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import api from "../configs/api"
 
 // ---------- Types ----------
 
@@ -12,12 +13,8 @@ interface FormState {
   experienceLevel: ExperienceLevel;
 }
 
-interface CareerPathFormProps {
-  /** Called with the collected data when the user submits the form */
-  onSubmit?: (data: FormState) => void;
-}
 
-// ---------- Static option lists ----------
+
 
 const INTEREST_OPTIONS: string[] = [
   "Web Development",
@@ -36,7 +33,7 @@ const EXPERIENCE_LEVELS: ExperienceLevel[] = [
 
 // ---------- Component ----------
 
-export default function CareerPathForm({ onSubmit }: CareerPathFormProps) {
+export default function CareerPathForm() {
   const [interests, setInterests] = useState<string[]>(["Web Development"]);
 
   // Skills are append-only: new skills are always added to the END of the
@@ -52,6 +49,7 @@ export default function CareerPathForm({ onSubmit }: CareerPathFormProps) {
   const [skillDraft, setSkillDraft] = useState<string>("");
   const [experienceLevel, setExperienceLevel] =
     useState<ExperienceLevel>("Beginner");
+  const [loading,setLoading]= useState<boolean>(false);
 
   const toggleInterest = (interest: string): void => {
     setInterests((prev) =>
@@ -90,15 +88,24 @@ export default function CareerPathForm({ onSubmit }: CareerPathFormProps) {
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async(e: React.FormEvent):Promise<void> => {
     e.preventDefault();
     const data: FormState = {
       interests,
       skills,
       experienceLevel,
     };
-    onSubmit?.(data);
-    navigate("/roadmap", { state: data });
+    try{
+     setLoading(true)
+      const response = await api.post("/api/roadmap", {formData:data});
+      console.log("Generated roadmap:",response.data)
+      navigate("/roadmap", {state:response.data.roadmap});
+   }catch(error){
+      console.log("Failed to generate roadmap:",error);
+    }finally{
+      setLoading(false)
+    }
+    
   };
 
   return (
@@ -215,8 +222,15 @@ export default function CareerPathForm({ onSubmit }: CareerPathFormProps) {
           type="submit"
           className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-3 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
         >
-          Generate My Career Path
-          <ArrowRight size={16} />
+          {loading ? 
+          ("generating...") 
+          :
+          ( <div className="flex gap-2">
+            <p>Generate my career roadmap</p>
+            <ArrowRight size={16}/>
+          </div>)
+          }
+            
         </button>
       </form>
     </div>
