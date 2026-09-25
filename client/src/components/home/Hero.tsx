@@ -20,10 +20,10 @@ export default function Hero() {
                        <h1 className="text-3xl">CareerBuddy</h1>
                     </a>
                     <div>
-                    <Link to='/login'state={{mode:"register"}} className="w-auto h-auto text-lg text-black font-bold bg-gradient-to-b from-gray-100 to-blue-300 px-3 py-2 rounded-4xl mr-4 transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors">
+                    <Link to='/app?state=register' className="w-auto h-auto text-lg text-black font-bold bg-gradient-to-b from-gray-100 to-blue-300 px-3 py-2 rounded-4xl mr-4 transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors">
                         Signup
                     </Link>
-                    <Link to='/login' state={{mode:"login"}} className="w-auto h-auto text-lg font-bold text-black bg-gradient-to-b from-gray-100 to-blue-300 px-3 py-2 rounded-4xl transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors">
+                    <Link to='/app?state=login' className="w-auto h-auto text-lg font-bold text-black bg-gradient-to-b from-gray-100 to-blue-300 px-3 py-2 rounded-4xl transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors">
                         Login
                     </Link>
                     </div>
@@ -35,7 +35,7 @@ export default function Hero() {
                 <p className="text-base mt-3 md:mt-7 max-w-xl">
                     Get a personalized roadmap to turn your interest into a career.
                 </p>
-                <Link to="/career" >
+                <Link to="/app?state=register" >
                    <button className=" flex justify-between items-center gap-1 bg-gradient-to-b from-gray-100 to-blue-300 text-black text-xl font-bold mt-10 px-4 py-3 rounded-2xl transition-transform duration-150 active:scale-90 hover:from-violet-500 hover:to-violet-600 transition-colors ">
                     Get Started
                     <ArrowRight size={16} />

@@ -1,7 +1,8 @@
 import React, { useState, KeyboardEvent } from "react";
 import { X, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../configs/api"
+import api from "../configs/api";
+import { useSelector, UseSelector } from "react-redux";
 
 // ---------- Types ----------
 
@@ -34,6 +35,7 @@ const EXPERIENCE_LEVELS: ExperienceLevel[] = [
 // ---------- Component ----------
 
 export default function CareerPathForm() {
+  const {token} = useSelector((state:any) => state.auth)
   const [interests, setInterests] = useState<string[]>(["Web Development"]);
 
   // Skills are append-only: new skills are always added to the END of the
@@ -97,9 +99,9 @@ export default function CareerPathForm() {
     };
     try{
      setLoading(true)
-      const response = await api.post("/api/roadmap", {formData:data});
+      const response = await api.post("/api/roadmap", {formData:data}, {headers: {Authorization: `Bearer ${token}`}});
       console.log("Generated roadmap:",response.data)
-      navigate("/roadmap", {state:response.data.roadmap});
+      navigate("/app/roadmap", {state:response.data.roadmap});
    }catch(error){
       console.log("Failed to generate roadmap:",error);
     }finally{
@@ -109,7 +111,7 @@ export default function CareerPathForm() {
   };
 
   return (
-    <div className="min-h-screen w-full  bg-gradient-to-b  from-indigo-50 via-white to-violet-500  flex flex-col items-center justify-center px-4 py-8 md:px-6">
+    <div className="min-h-screen w-full bg-white flex flex-col items-center justify-center px-4 py-8 md:px-6">
       <form
         onSubmit={handleSubmit}
         className="w-[500px] max-w-md bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8"

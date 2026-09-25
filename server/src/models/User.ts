@@ -6,11 +6,16 @@ export interface IUser extends Document {
     email:string;
     password:string;
     comparePassword(candidatePassword:string):Promise<boolean>;
+    resetPasswordToken?:string | undefined;
+    resetPasswordExpires?:Date | undefined;
 }
 const UserSchema = new mongoose.Schema<IUser>({
     name:{type:String, required:true},
     email:{type:String,required:true},
-    password:{type:String, required:true}
+    password:{type:String, required:true},
+    resetPasswordToken:{type:String},
+    resetPasswordExpires:{type:Date}
+
 },{timestamps:true})
 
 UserSchema.methods.comparePassword = function(password:string){

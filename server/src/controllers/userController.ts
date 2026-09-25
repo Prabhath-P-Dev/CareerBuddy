@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import resend from "../config/resend";
 
 const secret = process.env.JWT_SECRET
 if(!secret){
@@ -90,4 +92,100 @@ export const loginUser = async(req:Request, res:Response) => {
         }
         return res.status(400).json({message:"An unknown error occured"})
     }
+}
+
+//controller for forgot password
+//POST: /api/users/forgot-password
+
+export const forgotPassword = async(req:Request, res:Response) => {
+  try{
+   const {email} = req.body;
+   const user = await User.findOne({email})
+   
+   if(!user){
+    return res.status(500).json({
+      success:false,
+      message:"user not found"
+    })
+   }
+   const resetToken = crypto.randomBytes(32).toString("hex");
+   const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+   user.resetPasswordToken = hashedToken;
+   user.resetPasswordExpires = new Date( Date.now() + 15* 60 * 1000);
+   await user.save();
+
+   const resetUrl = `http://localhost:5173/reset-Password/${resetToken}`;
+
+   await resend.emails.send({
+    from:"onboarding@resend.dev",
+    to:user.email,
+    subject:"Reset your password",
+    html:`
+      <h2> Password reset Request </h2>
+      
+      <p>Hello ${user.name},</p>
+      <p>we received a request to reset your password</p>
+      <p>
+       <a href="${resetUrl}">
+       Click here to reset your password
+       </a>
+       </p>
+       <p> This link will expires in 10 minutes</p>
+       <p>If you didn't request you can safely ignore this email</p>`
+   })
+
+   return res.status(200).json({
+    success:true,
+    message:"Password reset link sent successfully"
+   })
+
+  }catch(error:any){
+    return res.status(500).json({
+      success:false,
+      message:"Internal server error"
+    })
+  }
+}
+
+//controller for reset password
+//POST: /api/users/reset-password/:token
+
+export const resetPassword = async(req:Request, res:Response) => {
+  try{
+    const {token} = req.params;
+    if(!token || Array.isArray(token)) {
+      return res.status(400).json({success:false, message:"Invalid token"})
+    }
+    const {password} = req.body;
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({
+      resetPasswordToken:hashedToken,
+      resetPasswordExpires:{$gt:Date.now()}
+    });
+
+    if(!user){
+      return res.status(400).json({
+        success:false,
+        message:"Invalid or expired reset token"
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    return res.status(200).json({
+      success:true,
+      message:"Password changed successfully"
+    });
+
+   }catch(error:any){
+    return res.status(500).json({
+      success:false,
+      message:"Internal server error"
+    })
+  }
 }
